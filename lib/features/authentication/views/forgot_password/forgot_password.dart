@@ -4,21 +4,22 @@ import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../otp/otp.dart';
 import '../signup/signup.dart';
 
 class ForgotPassword extends StatelessWidget {
-  const ForgotPassword({super.key});
+  const ForgotPassword({Key? key});
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> _formKey =
+        GlobalKey<FormState>(); // Add this line
+
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: DaguSpacingStyles.paddingWithAppBarHeight,
@@ -51,6 +52,7 @@ class ForgotPassword extends StatelessWidget {
                 ],
               ),
               Form(
+                key: _formKey, // Add this line
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
@@ -60,14 +62,28 @@ class ForgotPassword extends StatelessWidget {
                           prefixIcon: Icon(Iconsax.direct_right),
                           labelText: "E-mail",
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          } else if (!RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              .hasMatch(value)) {
+                            return 'Please enter a valid email address';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 30),
                       SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              onPressed: () => Get.to(() => const CreateNewPasswordView()),
-                              child: const Text("Confirm")
-                          ),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              Get.to(() => const CreateNewPasswordView());
+                            }
+                          },
+                          child: const Text("Confirm"),
+                        ),
                       ),
                     ],
                   ),
