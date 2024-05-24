@@ -1,4 +1,4 @@
-# dagu_mobile
+# dagu
 
 A new Flutter project.
 
