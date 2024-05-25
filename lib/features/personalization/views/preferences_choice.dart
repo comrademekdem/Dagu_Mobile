@@ -1,114 +1,180 @@
+import 'package:dagu/common/styles/spacing_styles.dart';
+import 'package:dagu/features/authentication/views/otp/otp.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
-void main() {
-  runApp(MyApp());
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/sizes.dart';
+import '../../../../utils/helpers/helper_functions.dart';
+
+class PreferencesView extends StatefulWidget {
+  const PreferencesView({Key? key}) : super(key: key);
+
+  @override
+  _PreferencesViewState createState() => _PreferencesViewState();
 }
 
-class MyApp extends StatelessWidget {
+class _PreferencesViewState extends State<PreferencesView> {
+  final _formKey = GlobalKey<FormState>();
+  bool _isPasswordVisible = false;
+  bool _isRememberMeChecked = false;
+  List<String> selectedTopics = [];
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Topic Preferences',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: TopicPreferencesPage(),
-    );
-  }
-}
+    bool dark = DaguHelperFunctions.isDarkMode(context);
+    List<String> topics = [
+      // Topic list
+    ];
 
-class TopicPreferencesPage extends StatefulWidget {
-  const TopicPreferencesPage({super.key});
-  @override
-  _TopicPreferencesPageState createState() => _TopicPreferencesPageState();
-}
-
-class _TopicPreferencesPageState extends State<TopicPreferencesPage> {
-  List<String> topics = [
-    'Technology',
-    'Science',
-    'Health',
-    'Sports',
-    'Art',
-    'Music',
-    'Travel',
-    'Food',
-    'Education',
-    'Politics',
-  ];
-
-  Set<String> selectedTopics = {};
-
-  void _toggleTopicSelection(String topic) {
-    setState(() {
-      if (selectedTopics.contains(topic)) {
-        selectedTopics.remove(topic);
-      } else {
-        selectedTopics.add(topic);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Choose Your Interests'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Select the topics you are interested in:',
-              style: TextStyle(fontSize: 18.0),
-            ),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: topics.length,
-                itemBuilder: (context, index) {
-                  final topic = topics[index];
-                  final isSelected = selectedTopics.contains(topic);
-                  return GestureDetector(
-                    onTap: () => _toggleTopicSelection(topic),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isSelected ? Colors.blue : Colors.grey,
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          topic,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        ),
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: DaguSpacingStyles.paddingWithAppBarHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Mekdem",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                        color: DaguColors.primaryColor,
                       ),
                     ),
-                  );
-                },
+                    TextSpan(
+                      text: ", Welcome to Dagu News.",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.left,
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle saving the selected topics
-                print('Selected Topics: $selectedTopics');
-              },
-              child: Text('Save Preferences'),
-            ),
-          ],
+              SizedBox(height: 25),
+              Text(
+                "Tell us what you want to discover, from Sports to Politics, from Entertainment to Health. Dagu will deliver.",
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 19),
+                textAlign: TextAlign.left,
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: 107,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedTopics.clear();
+                        });
+                      },
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          side: BorderSide(
+                              color: dark ? Colors.white : Color(0xFF652D91)),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Iconsax.trash,
+                            color: dark
+                                ? DaguColors.white
+                                : DaguColors.primaryColor,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            "Reset",
+                            style: TextStyle(
+                              color: dark
+                                  ? DaguColors.white
+                                  : DaguColors.primaryColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: DaguSizes.spaceBtwSections * 1.25),
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: topics.map((topic) {
+                    final isSelected = selectedTopics.contains(topic);
+                    return OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (isSelected) {
+                            selectedTopics.remove(topic);
+                          } else {
+                            selectedTopics.add(topic);
+                          }
+                        });
+                      },
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        side: BorderSide(
+                            color: isSelected
+                                ? DaguColors.white
+                                : DaguColors
+                                    .primaryColor), // Border color logic
+                        backgroundColor: isSelected
+                            ? dark
+                                ? DaguColors.white
+                                : DaguColors.primaryColor
+                            : dark
+                                ? null
+                                : null,
+                      ),
+                      child: Text(
+                        topic,
+                        style: TextStyle(
+                          color: isSelected
+                              ? dark
+                                  ? DaguColors.primaryColor
+                                  : DaguColors.white
+                              : dark
+                                  ? DaguColors.white
+                                  : DaguColors.primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: DaguSizes.spaceBtwSections),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() == true) {
+                      Get.to(() => const OTPView());
+                    }
+                  },
+                  child: const Text("Confirm"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

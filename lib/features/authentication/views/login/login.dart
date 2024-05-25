@@ -143,7 +143,7 @@ class _LoginViewState extends State<LoginView> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState?.validate() == true) {
-                              Get.to(() => const TopicPreferencesPage());
+                              Get.to(() => const PreferencesView());
                             }
                           },
                           child: const Text("Sign In"),
