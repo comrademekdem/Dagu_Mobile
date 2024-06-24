@@ -1,11 +1,10 @@
-import 'package:dagu/utils/constants/colors.dart';
-import 'package:dagu/utils/constants/sizes.dart';
-import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-
-import '../../../../utils/constants/text_strings.dart';
+import 'package:dagu/utils/constants/colors.dart';
+import 'package:dagu/utils/constants/sizes.dart';
+import 'package:dagu/utils/helpers/helper_functions.dart';
+import 'package:dagu/utils/api_service/api_service.dart';
 import '../otp/otp.dart';
 
 class SignUpView extends StatefulWidget {
@@ -17,8 +16,43 @@ class SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isChecked = true;
+  bool _isLoading = false;
+
+  Future<void> _register() async {
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ApiService().register(
+        _usernameController.text,
+        _firstNameController.text,
+        _lastNameController.text,
+        _passwordController.text,
+        _emailController.text,
+      );
+      Get.to(() => const OTPView());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to register')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +88,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: _firstNameController,
                             decoration: const InputDecoration(
                               labelText: "First Name",
                               prefixIcon: Icon(Iconsax.user),
@@ -71,6 +106,7 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                         Expanded(
                           child: TextFormField(
+                            controller: _lastNameController,
                             decoration: const InputDecoration(
                               labelText: "Last Name",
                               prefixIcon: Icon(Iconsax.user),
@@ -89,6 +125,7 @@ class _SignUpViewState extends State<SignUpView> {
                       height: DaguSizes.spaceBtwInputFields,
                     ),
                     TextFormField(
+                      controller: _usernameController,
                       decoration: const InputDecoration(
                         labelText: "Username",
                         prefixIcon: Icon(Iconsax.user_edit),
@@ -104,6 +141,7 @@ class _SignUpViewState extends State<SignUpView> {
                       height: DaguSizes.spaceBtwInputFields,
                     ),
                     TextFormField(
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         labelText: "E-mail",
                         prefixIcon: Icon(Iconsax.message),
@@ -123,23 +161,7 @@ class _SignUpViewState extends State<SignUpView> {
                       height: DaguSizes.spaceBtwInputFields,
                     ),
                     TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "Phone Number",
-                        prefixIcon: Icon(Iconsax.call),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        } else if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
-                          return 'Please enter a valid 10-digit phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: DaguSizes.spaceBtwInputFields,
-                    ),
-                    TextFormField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: "Password",
                         prefixIcon: const Icon(Iconsax.password_check),
@@ -247,12 +269,13 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() == true) {
-                            Get.to(() => const OTPView());
-                          }
-                        },
-                        child: const Text("Create Account"),
+                        onPressed: _isLoading ? null : _register,
+                        child: _isLoading
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : const Text("Create Account"),
                       ),
                     ),
                     const SizedBox(height: DaguSizes.spaceBtwItems),
