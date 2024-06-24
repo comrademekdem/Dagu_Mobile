@@ -31,6 +31,7 @@ class OTPView extends StatelessWidget {
                   image: AssetImage(
                     "assets/images/logo.png",
                   )),
+
               ///Title
               const SizedBox(
                 height: DaguSizes.spaceBtwSections,
@@ -41,7 +42,8 @@ class OTPView extends StatelessWidget {
               const SizedBox(
                 height: DaguSizes.spaceBtwSections,
               ),
-              const Text("Enter the verification code we just sent to you e-mail.",
+              const Text(
+                  "Enter the verification code we just sent to you e-mail.",
                   style: TextStyle(
                     fontSize: 20,
                   ),
@@ -68,16 +70,20 @@ class OTPView extends StatelessWidget {
                         selectedFillColor: Colors.white,
                         inactiveFillColor: Colors.grey.shade200,
                       ),
-                      onCompleted: (value) {
-                      },
+                      onCompleted: (value) {},
                     ),
-
-                    const SizedBox(height: DaguSizes.spaceBtwSections,),
-
-                    SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () => Get.to(() => const PasswordChangeSuccessView()),
-                        child: const Text("Submit"))
+                    const SizedBox(
+                      height: DaguSizes.spaceBtwSections,
                     ),
-                    const SizedBox(height: DaguSizes.spaceBtwSections,),
+                    SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () =>
+                                Get.to(() => const AccountCreateSuccessView()),
+                            child: const Text("Submit"))),
+                    const SizedBox(
+                      height: DaguSizes.spaceBtwSections,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -92,18 +98,16 @@ class OTPView extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const OTPView()),
+                              MaterialPageRoute(
+                                  builder: (context) => const OTPView()),
                             );
                           },
                           child: const Text("Resend OTP"),
-
                         ),
                       ],
                     ),
                   ],
-
                 ),
-
               )
             ],
           ),
