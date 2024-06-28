@@ -49,8 +49,8 @@ class _LoginViewState extends State<LoginView> {
 
       final response = await _apiService.login(username, password);
       print(response);
-      Get.to(
-          () => SignUpView()); // Navigate to next screen after successful login
+      Get.to(() =>
+          const PreferencesView()); // Navigate to next screen after successful login
     } catch (e) {
       print('Login failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(
