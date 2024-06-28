@@ -1,12 +1,11 @@
-import 'package:dagu/common/styles/spacing_styles.dart';
-import 'package:dagu/features/authentication/views/otp/otp.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-
-import '../../../../utils/constants/colors.dart';
-import '../../../../utils/constants/sizes.dart';
-import '../../../../utils/helpers/helper_functions.dart';
+import 'package:dagu/common/styles/spacing_styles.dart';
+import 'package:dagu/utils/constants/colors.dart';
+import 'package:dagu/utils/constants/sizes.dart';
+import 'package:dagu/utils/helpers/helper_functions.dart';
+import 'package:dagu/features/authentication/views/otp/otp.dart';
 
 class PreferencesView extends StatefulWidget {
   const PreferencesView({Key? key}) : super(key: key);
@@ -25,7 +24,7 @@ class _PreferencesViewState extends State<PreferencesView> {
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     List<String> topics = [
-      // Topic list
+      "Sports", "Politics", "Entertainment", "Health" // Sample topics
     ];
 
     return Scaffold(
@@ -111,7 +110,10 @@ class _PreferencesViewState extends State<PreferencesView> {
                 ],
               ),
               const SizedBox(height: DaguSizes.spaceBtwSections * 1.25),
-              Expanded(
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 300.0, // Set a fixed height to avoid layout issues
+                ),
                 child: ListView(
                   shrinkWrap: true,
                   children: topics.map((topic) {
@@ -133,8 +135,7 @@ class _PreferencesViewState extends State<PreferencesView> {
                         side: BorderSide(
                             color: isSelected
                                 ? DaguColors.white
-                                : DaguColors
-                                    .primaryColor), // Border color logic
+                                : DaguColors.primaryColor),
                         backgroundColor: isSelected
                             ? dark
                                 ? DaguColors.white
