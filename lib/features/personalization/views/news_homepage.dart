@@ -23,56 +23,23 @@ class HomePage extends StatelessWidget {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search News',
-                        suffixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
-                            color:
-                                dark ? Colors.white : DaguColors.primaryColor,
-                            width: 5,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
-                            color:
-                                dark ? Colors.white : DaguColors.primaryColor,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: DaguColors.primaryColor,
-                            width: 1,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.notifications,
-                        color: dark ? Colors.white : DaguColors.primaryColor),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              SizedBox()
-            ],
+        title: Text('Home'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
+            },
           ),
-        ),
+          IconButton(
+            icon: Icon(Icons.notifications,
+                color: dark ? Colors.white : DaguColors.primaryColor),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -83,34 +50,113 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Latest News Section
-
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Latest News',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to see more page
+                      },
+                      child: Text(
+                        'See All',
+                        style: TextStyle(
+                          color: DaguColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 10),
-              LatestNewsCard(),
-              SizedBox(height: 20),
-
-              // Categories
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CategoryChip(label: 'Healthy'),
-                  CategoryChip(label: 'Technology'),
-                  CategoryChip(label: 'Finance'),
-                  CategoryChip(label: 'Arts'),
-                  CategoryChip(label: 'Sports'),
-                ],
+              // Horizontally scrollable news cards
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    LatestNewsCard(),
+                    SizedBox(width: 10),
+                    LatestNewsCard(),
+                    SizedBox(width: 10),
+                    LatestNewsCard(),
+                    SizedBox(width: 10),
+                    LatestNewsCard(),
+                  ],
+                ),
               ),
               SizedBox(height: 20),
 
-              // News Articles
+              // Discover More Section
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'Discover More',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              // Horizontally scrollable categories
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    CategoryChip(label: 'Healthy'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Technology'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Finance'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Arts'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Sports'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Politics'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Science'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Education'),
+                    SizedBox(width: 10),
+                    CategoryChip(label: 'Travel'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Vertically scrollable news articles with text over images
               NewsArticleCard(
                 title: '5 things to know about the \'conundrum\' of lupus',
                 author: 'Matt Villano',
                 date: 'Sunday, 9 May 2021',
               ),
+              SizedBox(height: 20),
               NewsArticleCard(
                 title: '4 ways families can ease anxiety together',
                 author: 'Zain Korsgaard',
                 date: 'Sunday, 9 May 2021',
+              ),
+              SizedBox(height: 20),
+              NewsArticleCard(
+                title:
+                    'Crypto investors should be prepared to lose all their money, BOE governor says',
+                author: 'Ryan Browne',
+                date: 'Monday, 10 May 2021',
+              ),
+              SizedBox(height: 20),
+              NewsArticleCard(
+                title: 'The future of technology in finance',
+                author: 'John Doe',
+                date: 'Tuesday, 11 May 2021',
               ),
             ],
           ),
@@ -143,44 +189,59 @@ class LatestNewsCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-            child: Image.asset(
-              'assets/images/homepage_placeholder_1.jpeg',
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: 250,
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                'assets/images/homepage_placeholder_1.jpeg',
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Crypto investors should be prepared to lose all their money, BOE governor says',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Crypto investors should be prepared to lose all their money, BOE governor says',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'by Ryan Browne',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  '“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ],
+                  SizedBox(height: 5),
+                  Text(
+                    'by Ryan Browne',
+                    style: TextStyle(color: Colors.grey[300]),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”',
+                    style: TextStyle(color: Colors.grey[300]),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -195,8 +256,13 @@ class CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(label),
-      backgroundColor: Colors.purple.withOpacity(0.1),
-      labelStyle: TextStyle(color: Colors.purple),
+      backgroundColor: Colors.transparent,
+      shape: StadiumBorder(
+        side: BorderSide(color: DaguColors.primaryColor),
+      ),
+      labelStyle: TextStyle(
+        color: DaguColors.primaryColor,
+      ),
     );
   }
 }
@@ -218,40 +284,73 @@ class NewsArticleCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        width: double.infinity,
+        height: 250,
+        child: Stack(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                'assets/images/homepage_placeholder_1.jpeg',
-                height: 150,
+                'assets/images/homepage_placeholder_2.jpeg',
+                height: 250,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 10),
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
               ),
             ),
-            SizedBox(height: 5),
-            Text(
-              'by $author',
-              style: TextStyle(color: Colors.grey),
-            ),
-            SizedBox(height: 5),
-            Text(
-              date,
-              style: TextStyle(color: Colors.grey),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'by $author',
+                    style: TextStyle(color: Colors.grey[300]),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    date,
+                    style: TextStyle(color: Colors.grey[300]),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SearchPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Search News'),
+      ),
+      body: Center(
+        child: Text('Search Page Content'),
       ),
     );
   }
