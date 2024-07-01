@@ -1,8 +1,13 @@
+import 'package:dagu/features/misc/about';
+import 'package:dagu/features/personalization/views/foryou_page.dart';
+import 'package:dagu/features/personalization/views/news_homepage.dart';
+import 'package:dagu/features/profile_management/user_profile_edit.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:dagu/utils/theme/theme.dart'; // Import your theme file
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProfileDetailsView extends StatelessWidget {
   @override
@@ -24,11 +29,42 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool isTwoFactorEnabled = false;
+
+  void _showConfirmationDialog(
+      String title, String content, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('For You'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -94,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.white),
                         onPressed: () {
-                          // Handle edit button press
+                          Get.to(() => UserProfileEditPage());
                         },
                       ),
                     ],
@@ -124,11 +160,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: Text('My Account'),
                     trailing: const Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.arrow_forward_ios),
+                      child: Icon(Icons.arrow_forward_ios, size: 20),
                     ),
                     onTap: () {
-                      // Navigate to account settings
+                      Get.to(() => UserProfileEditPage());
                     },
+                  ),
+                  Divider(
+                    color: dark ? DaguColors.darkGrey : DaguColors.grey,
+                    thickness: 0.5,
+                    indent: 5,
+                    endIndent: 20,
                   ),
                   ListTile(
                     leading: Icon(Icons.lock),
@@ -153,17 +195,28 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: Text('Reset User Preferences'),
                     trailing: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.arrow_forward_ios),
                     ),
                     onTap: () {
-                      // Navigate to reset user preferences
+                      _showConfirmationDialog(
+                        "Reset Preferences",
+                        "Are you sure you want to reset preferences?",
+                        () {
+                          // Handle reset preferences
+                        },
+                      );
                     },
                   ),
                   ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text('Log out'),
                     onTap: () {
-                      // Handle logout
+                      _showConfirmationDialog(
+                        "Log out",
+                        "Are you sure you want to log out?",
+                        () {
+                          // Handle logout
+                        },
+                      );
                     },
                   ),
                 ],
@@ -190,7 +243,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: Text('Help & Support'),
                     trailing: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.arrow_forward_ios),
                     ),
                     onTap: () {
                       // Navigate to help and support
@@ -201,10 +253,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: Text('About App'),
                     trailing: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.arrow_forward_ios),
                     ),
                     onTap: () {
-                      // Navigate to about app
+                      Get.to(() => AboutAppPage());
                     },
                   ),
                 ],
@@ -214,8 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -229,6 +279,25 @@ class _ProfilePageState extends State<ProfilePage> {
             label: 'Profile',
           ),
         ],
+        onTap: (int index) {
+          // Handle navigation to different pages based on index
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewsHomePage()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ForYouPage()),
+            );
+          } else if (index == 2) {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ProfilePage()),
+            // );
+          }
+        },
       ),
     );
   }
