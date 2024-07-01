@@ -189,9 +189,7 @@ class _PreferencesViewState extends State<PreferencesView> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState?.validate() == true) {
-                      Get.to(() => NewsHomePage());
-                    }
+                    Get.to(() => NewsHomePage());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF652D91), // Button color
