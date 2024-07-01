@@ -1,10 +1,7 @@
+import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:dagu/common/styles/spacing_styles.dart';
-import 'package:dagu/utils/constants/colors.dart';
-import 'package:dagu/utils/constants/sizes.dart';
-import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:dagu/features/authentication/views/otp/otp.dart';
 
 class PreferencesView extends StatefulWidget {
@@ -16,35 +13,75 @@ class PreferencesView extends StatefulWidget {
 
 class _PreferencesViewState extends State<PreferencesView> {
   final _formKey = GlobalKey<FormState>();
-  bool _isPasswordVisible = false;
-  bool _isRememberMeChecked = false;
   List<String> selectedTopics = [];
 
   @override
   Widget build(BuildContext context) {
-    bool dark = DaguHelperFunctions.isDarkMode(context);
+    bool dark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     List<String> topics = [
-      "Sports", "Politics", "Entertainment", "Health" // Sample topics
+      "Politics",
+      "World",
+      "Business",
+      "Tech",
+      "Climate",
+      "Health",
+      "Culture",
+      "Science",
+      "Sports",
+      "Education",
+      "Obituaries",
+      "The Upshot",
+      "The Magazine",
+      "2024 Elections",
+      "Primary Results",
+      "Supreme Court",
+      "Congress",
+      "Biden Administration",
+      "Trump Investigations",
+      "Immigration",
+      "Abortion",
+      "Campus Protests",
+      "Audio",
+      "Podcasts",
+      "Narrated Articles",
+      "Newsletters",
+      "Games",
+      "Puzzles",
+      "Crosswords",
+      "Baseball",
+      "Soccer",
+      "Opinion",
+      "Lifestyle",
+      "Wellness",
+      "Travel",
+      "Style",
+      "Real Estate",
+      "Food",
+      "Love",
+      "Your Money",
+      "Personal Tech",
+      "T Magazine"
     ];
 
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: DaguSpacingStyles.paddingWithAppBarHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-              Text.rich(
-                TextSpan(
+              RichText(
+                text: TextSpan(
                   children: [
                     TextSpan(
                       text: "Mekdem",
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w700,
-                        color: DaguColors.primaryColor,
+                        color: Color(0xFF652D91), // DaguColors.primaryColor,
                       ),
                     ),
                     TextSpan(
@@ -52,19 +89,24 @@ class _PreferencesViewState extends State<PreferencesView> {
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w700,
+                        color: dark ? Colors.white : Colors.black,
                       ),
                     ),
                   ],
                 ),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Text(
-                "Tell us what you want to discover, from Sports to Politics, from Entertainment to Health. Dagu will deliver.",
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 19),
+                "Tell us what you want to discover, from Sports to Politics, from Entertainment to Health and Dagu will deliver.",
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 19,
+                  color: dark ? Colors.white : Colors.black,
+                ),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -80,25 +122,22 @@ class _PreferencesViewState extends State<PreferencesView> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                           side: BorderSide(
-                              color: dark ? Colors.white : Color(0xFF652D91)),
+                            color: dark ? Colors.white : Color(0xFF652D91),
+                          ),
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Iconsax.trash,
-                            color: dark
-                                ? DaguColors.white
-                                : DaguColors.primaryColor,
+                            color: dark ? Colors.white : Color(0xFF652D91),
                             size: 16,
                           ),
                           const SizedBox(width: 10),
                           Text(
                             "Reset",
                             style: TextStyle(
-                              color: dark
-                                  ? DaguColors.white
-                                  : DaguColors.primaryColor,
+                              color: dark ? Colors.white : Color(0xFF652D91),
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
                             ),
@@ -109,69 +148,65 @@ class _PreferencesViewState extends State<PreferencesView> {
                   ),
                 ],
               ),
-              const SizedBox(height: DaguSizes.spaceBtwSections * 1.25),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: 300.0, // Set a fixed height to avoid layout issues
-                ),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: topics.map((topic) {
-                    final isSelected = selectedTopics.contains(topic);
-                    return OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (isSelected) {
-                            selectedTopics.remove(topic);
-                          } else {
-                            selectedTopics.add(topic);
-                          }
-                        });
-                      },
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        side: BorderSide(
-                            color: isSelected
-                                ? DaguColors.white
-                                : DaguColors.primaryColor),
-                        backgroundColor: isSelected
-                            ? dark
-                                ? DaguColors.white
-                                : DaguColors.primaryColor
-                            : dark
-                                ? null
-                                : null,
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 10.0,
+                runSpacing: 10.0,
+                children: topics.map((topic) {
+                  final isSelected = selectedTopics.contains(topic);
+                  return ChoiceChip(
+                    label: Text(
+                      topic,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Color(0xFF652D91),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
-                      child: Text(
-                        topic,
-                        style: TextStyle(
-                          color: isSelected
-                              ? dark
-                                  ? DaguColors.primaryColor
-                                  : DaguColors.white
-                              : dark
-                                  ? DaguColors.white
-                                  : DaguColors.primaryColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                    ),
+                    selected: isSelected,
+                    selectedColor: Color(0xFF652D91),
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(
+                      color: Color(0xFF652D91),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    onSelected: (selected) {
+                      setState(() {
+                        if (isSelected) {
+                          selectedTopics.remove(topic);
+                        } else {
+                          selectedTopics.add(topic);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
               ),
-              const SizedBox(height: DaguSizes.spaceBtwSections),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
-                      Get.to(() => const OTPView());
+                      Get.to(() => NewsHomePage());
                     }
                   },
-                  child: const Text("Confirm"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF652D91), // Button color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  child: const Text(
+                    "Submit",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ],
