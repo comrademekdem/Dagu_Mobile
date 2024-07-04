@@ -26,12 +26,39 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
   String _lastName = "";
   String _username = "";
   String _email = "";
+  void _showConfirmationDialog(
+      String title, String content, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
+        title: const Text('Edit Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -47,15 +74,16 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
                     backgroundColor: Colors.grey,
                     backgroundImage: _image != null ? FileImage(_image!) : null,
                     child: _image == null
-                        ? Icon(Icons.camera_alt, size: 50, color: Colors.white)
+                        ? const Icon(Icons.camera_alt,
+                            size: 50, color: Colors.white)
                         : null,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 initialValue: "Fekadu",
-                decoration: InputDecoration(labelText: 'First Name'),
+                decoration: const InputDecoration(labelText: 'First Name'),
                 onSaved: (value) => _firstName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -64,10 +92,10 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 initialValue: "Sisay",
-                decoration: InputDecoration(labelText: 'Last Name'),
+                decoration: const InputDecoration(labelText: 'Last Name'),
                 onSaved: (value) => _lastName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -76,7 +104,7 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 initialValue: "fekaduS",
                 decoration: InputDecoration(labelText: 'Username'),
@@ -88,10 +116,10 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 initialValue: "fekadusisay@gmail.com",
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 onSaved: (value) => _email = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -103,19 +131,20 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Process the updated profile information
-                    print('First Name: $_firstName');
-                    print('Last Name: $_lastName');
-                    print('Username: $_username');
-                    print('Email: $_email');
+                    _showConfirmationDialog(
+                      "Reset Preferences",
+                      "Are you sure you want to reset preferences?",
+                      () {
+                        // Handle reset preferences
+                      },
+                    );
                   }
                 },
-                child: Text('Update Profile'),
+                child: const Text('Update Profile'),
               ),
             ],
           ),

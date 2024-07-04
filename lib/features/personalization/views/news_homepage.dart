@@ -1,4 +1,6 @@
+import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
+import 'package:dagu/features/personalization/views/preferences_choice.dart';
 import 'package:dagu/features/profile_management/user_profile_details.dart';
 import 'package:dagu/features/search/search.dart';
 import 'package:dagu/utils/constants/colors.dart';
@@ -6,6 +8,8 @@ import 'package:dagu/utils/constants/sizes.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:dagu/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart'; // Import the share_plus package
 
 class NewsHomePage extends StatefulWidget {
   @override
@@ -37,16 +41,15 @@ class _NewsHomePageState extends State<NewsHomePage> {
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
-                );
+                Get.to(() => SearchPage());
               },
             ),
             IconButton(
-              icon: Icon(Icons.notifications,
+              icon: Icon(Icons.person,
                   color: dark ? Colors.white : DaguColors.primaryColor),
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => ProfilePage());
+              },
             ),
           ],
         ),
@@ -182,28 +185,16 @@ class _NewsHomePageState extends State<NewsHomePage> {
               label: 'For You',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
+              icon: Icon(Icons.message),
+              label: 'Messages',
             ),
           ],
           onTap: (int index) {
-            // Handle navigation to different pages based on index
             if (index == 0) {
-              // Navigate to Home page
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => NewsHomePage()),
-              // );
             } else if (index == 1) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ForYouPage()),
-              );
+              Get.to(() => ForYouPage());
             } else if (index == 2) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
+              Get.to(() => MessagesPage());
             }
           },
         ),
@@ -298,6 +289,27 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                         color: isLiked ? Colors.red : Colors.white,
                       ),
                       onPressed: () {
+                        if (!isLiked) {
+                          if (!isLiked) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('News Article added to Liked.')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('News Article removed from Liked.')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('News Article removed from Liked.')),
+                          );
+                        }
                         setState(() {
                           isLiked = !isLiked;
                         });
@@ -309,6 +321,18 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                         color: isBookmarked ? Colors.yellow : Colors.white,
                       ),
                       onPressed: () {
+                        if (!isBookmarked) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('News Article added to Saved.')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('News Article removed from Saved.')),
+                          );
+                        }
                         setState(() {
                           isBookmarked = !isBookmarked;
                         });
@@ -317,7 +341,10 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                     IconButton(
                       icon: Icon(Icons.share, color: Colors.white),
                       onPressed: () {
-                        // Implement share functionality
+                        Share.share(
+                          'Check out this news article: Crypto investors should be prepared to lose all their money, BOE governor says',
+                          subject: 'News Article',
+                        );
                       },
                     ),
                   ],
@@ -447,6 +474,19 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                         color: isLiked ? Colors.red : Colors.white,
                       ),
                       onPressed: () {
+                        if (!isLiked) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('News Article added to Liked.')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('News Article removed from Liked.')),
+                          );
+                        }
+
                         setState(() {
                           isLiked = !isLiked;
                         });
@@ -458,6 +498,18 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                         color: isBookmarked ? Colors.yellow : Colors.white,
                       ),
                       onPressed: () {
+                        if (!isBookmarked) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('News Article added to Liked.')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('News Article removed from Liked.')),
+                          );
+                        }
                         setState(() {
                           isBookmarked = !isBookmarked;
                         });
@@ -466,7 +518,10 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                     IconButton(
                       icon: Icon(Icons.share, color: Colors.white),
                       onPressed: () {
-                        // Implement share functionality
+                        Share.share(
+                          'Check out this news article: ${widget.title} by ${widget.author} on ${widget.date}',
+                          subject: 'News Article',
+                        );
                       },
                     ),
                   ],
