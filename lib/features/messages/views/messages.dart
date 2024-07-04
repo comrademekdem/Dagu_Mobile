@@ -1,19 +1,18 @@
-import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-class SearchPage extends StatelessWidget {
+class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search News'),
+        title: Text('Messages'),
       ),
       body: const Center(
-        child: Text('Search Page Content'),
+        child: Text('Messages Page Content'),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -35,9 +34,7 @@ class SearchPage extends StatelessWidget {
             Get.to(() => NewsHomePage());
           } else if (index == 1) {
             Get.to(() => ForYouPage());
-          } else if (index == 2) {
-            Get.to(() => MessagesPage());
-          }
+          } else if (index == 2) {}
         },
       ),
     );

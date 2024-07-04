@@ -1,6 +1,9 @@
+import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:dagu/features/profile_management/user_profile_details.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class ForYouPage extends StatelessWidget {
   @override
@@ -23,25 +26,16 @@ class ForYouPage extends StatelessWidget {
             label: 'For You',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.message),
+            label: 'Messages',
           ),
         ],
         onTap: (int index) {
-          // Handle navigation to different pages based on index
           if (index == 0) {
-            // Navigate to Home page
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewsHomePage()),
-            );
+            Get.to(() => NewsHomePage());
           } else if (index == 1) {
-            // Navigate to For You page
           } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
-            );
+            Get.to(() => MessagesPage());
           }
         },
       ),

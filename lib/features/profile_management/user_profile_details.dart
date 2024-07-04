@@ -1,26 +1,15 @@
+import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/misc/about';
+import 'package:dagu/features/misc/helpAndSupport.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:dagu/features/profile_management/user_profile_edit.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
-import 'package:dagu/utils/theme/theme.dart'; // Import your theme file
+import 'package:dagu/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-class ProfileDetailsView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Profile Page',
-      theme: DaguAppTheme.lightTheme,
-      darkTheme: DaguAppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: ProfilePage(),
-    );
-  }
-}
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -62,8 +51,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
+      /*
+      
+      */
       appBar: AppBar(
-        title: const Text('For You'),
+        title: const Text('Edit Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -213,9 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _showConfirmationDialog(
                         "Log out",
                         "Are you sure you want to log out?",
-                        () {
-                          // Handle logout
-                        },
+                        () {},
                       );
                     },
                   ),
@@ -239,15 +229,14 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.help),
-                    title: Text('Help & Support'),
-                    trailing: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                    ),
-                    onTap: () {
-                      // Navigate to help and support
-                    },
-                  ),
+                      leading: Icon(Icons.help),
+                      title: Text('Help & Support'),
+                      trailing: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                      ),
+                      onTap: () {
+                        Get.to(() => HelpAndSupportPage());
+                      }),
                   ListTile(
                     leading: Icon(Icons.info),
                     title: Text('About App'),
@@ -275,27 +264,17 @@ class _ProfilePageState extends State<ProfilePage> {
             label: 'For You',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.message),
+            label: 'Messages',
           ),
         ],
         onTap: (int index) {
-          // Handle navigation to different pages based on index
           if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewsHomePage()),
-            );
+            Get.to(() => NewsHomePage());
           } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ForYouPage()),
-            );
+            Get.to(() => ForYouPage());
           } else if (index == 2) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ProfilePage()),
-            // );
+            Get.to(() => MessagesPage());
           }
         },
       ),
