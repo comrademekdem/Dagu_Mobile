@@ -58,7 +58,8 @@ class _CreateNewPasswordViewState extends State<CreateNewPasswordView> {
               Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.only(
+                      top: 20, bottom: 20, left: 0, right: 0),
                   child: Column(
                     children: [
                       TextFormField(

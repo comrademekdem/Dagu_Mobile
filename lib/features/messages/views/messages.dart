@@ -1,42 +1,55 @@
-import 'package:dagu/features/personalization/views/foryou_page.dart';
-import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messages'),
+        title: Text('Choose User'),
       ),
-      body: const Center(
-        child: Text('Messages Page Content'),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      body: ListView(
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              // Example avatar
+              backgroundColor: Colors.blue,
+              child: Text('A'), // Example initials or image
+            ),
+            title: Text('User 1'), // Replace with user's name
+            onTap: () {
+              // Replace with sending logic
+              _sendNewsToUser('User 1');
+              Navigator.pop(context); // Close messages page after sending
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'For You',
+          ListTile(
+            leading: CircleAvatar(
+              // Example avatar
+              backgroundColor: Colors.green,
+              child: Text('B'), // Example initials or image
+            ),
+            title: Text('User 2'), // Replace with user's name
+            onTap: () {
+              // Replace with sending logic
+              _sendNewsToUser('User 2');
+              Navigator.pop(context); // Close messages page after sending
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
+          // Add more ListTiles for other users as needed
         ],
-        onTap: (int index) {
-          if (index == 0) {
-            Get.to(() => NewsHomePage());
-          } else if (index == 1) {
-            Get.to(() => ForYouPage());
-          } else if (index == 2) {}
-        },
       ),
     );
+  }
+
+  void _sendNewsToUser(String userName) {
+    // Replace with logic to send news article to selected user
+    String newsTitle =
+        'Crypto investors should be prepared to lose all their money, BOE governor says';
+    String newsAuthor = 'Ryan Browne';
+    String newsDate = 'Today'; // Replace with actual date if available
+
+    // Example: Send news to the user's chat
+    print('Sending news to $userName: $newsTitle by $newsAuthor on $newsDate');
+    // Implement your sending logic here (e.g., send to a chat or store for sending later)
   }
 }
