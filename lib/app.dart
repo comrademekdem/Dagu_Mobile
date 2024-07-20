@@ -20,7 +20,7 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: DaguAppTheme.lightTheme,
       darkTheme: DaguAppTheme.darkTheme,
-      home: NewsHomePage(),
+      home: PreferencesView(),
     );
   }
 }

@@ -1,17 +1,17 @@
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/views/category_chip.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
+import 'package:dagu/features/personalization/views/lastest_news.dart';
 import 'package:dagu/features/personalization/views/news_article_card.dart';
-import 'package:dagu/features/personalization/views/preferences_choice.dart';
 import 'package:dagu/features/profile_management/user_profile_details.dart';
 import 'package:dagu/features/search/search.dart';
+// import 'package:dagu/features/search/search_page.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:dagu/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
 
 class NewsHomePage extends StatefulWidget {
   @override
@@ -19,6 +19,19 @@ class NewsHomePage extends StatefulWidget {
 }
 
 class _NewsHomePageState extends State<NewsHomePage> {
+  int _currentIndex = 0;
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    if (index == 1) {
+      Get.to(() => ForYouPage());
+    } else if (index == 2) {
+      Get.to(() => MessagesPage());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
@@ -78,11 +91,18 @@ class _NewsHomePageState extends State<NewsHomePage> {
                         onPressed: () {
                           // Navigate to see more page
                         },
-                        child: Text(
-                          'See All',
-                          style: TextStyle(
-                            color: DaguColors.primaryColor,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                color: DaguColors.primaryColor,
+                              ),
+                            ),
+                            Icon(Icons.arrow_forward,
+                                color: DaguColors.primaryColor),
+                          ],
                         ),
                       ),
                     ],
@@ -155,39 +175,28 @@ class _NewsHomePageState extends State<NewsHomePage> {
                 SizedBox(height: 20),
 
                 // Vertically scrollable news articles with text over images
-                // NewsArticleCard(
-                //   title: '5 things to know about the \'conundrum\' of lupus',
-                //   author: 'Matt Villano',
-                //   date: 'Sunday, 9 May 2021',
-                //   sourceUrl: 'https://example.com',
-                // ),
-                // SizedBox(height: 20),
-                // NewsArticleCard(
-                //   title: '4 ways families can ease anxiety together',
-                //   author: 'Zain Korsgaard',
-                //   date: 'Sunday, 9 May 2021',
-                //   sourceUrl: 'https://example.com',
-                // ),
-                // SizedBox(height: 20),
-                // NewsArticleCard(
-                //   title:
-                //       'Crypto investors should be prepared to lose all their money, BOE governor says',
-                //   author: 'Ryan Browne',
-                //   date: 'Monday, 10 May 2021',
-                //   sourceUrl: 'https://example.com',
-                // ),
-                // SizedBox(height: 20),
-                // NewsArticleCard(
-                //   title: 'The future of technology in finance',
-                //   author: 'John Doe',
-                //   date: 'Tuesday, 11 May 2021',
-                //   sourceUrl: 'https://example.com',
-                // ),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
+                NewsArticleCard(),
+                SizedBox(height: 20),
               ],
             ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex, // Add this line
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -202,14 +211,7 @@ class _NewsHomePageState extends State<NewsHomePage> {
               label: 'Messages',
             ),
           ],
-          onTap: (int index) {
-            if (index == 0) {
-            } else if (index == 1) {
-              Get.to(() => ForYouPage());
-            } else if (index == 2) {
-              // Get.to(() => MessagesPage());
-            }
-          },
+          onTap: _onTabTapped,
         ),
       ),
     );

@@ -128,6 +128,7 @@ class _PreferencesViewState extends State<PreferencesView> {
                       ),
                       child: Row(
                         children: [
+                          const SizedBox(width: 20),
                           Icon(
                             Iconsax.trash,
                             color: dark ? Colors.white : Color(0xFF652D91),

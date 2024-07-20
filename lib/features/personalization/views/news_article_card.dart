@@ -1,12 +1,13 @@
+import 'package:dagu/features/messages/views/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-class LatestNewsCard extends StatefulWidget {
+class NewsArticleCard extends StatefulWidget {
   @override
-  _LatestNewsCardState createState() => _LatestNewsCardState();
+  _NewsArticleCardState createState() => _NewsArticleCardState();
 }
 
-class _LatestNewsCardState extends State<LatestNewsCard> {
+class _NewsArticleCardState extends State<NewsArticleCard> {
   bool isLiked = false;
   bool isBookmarked = false;
 
@@ -17,7 +18,7 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: MediaQuery.of(context).size.width,
         height: 250,
         child: Stack(
           children: [
@@ -153,47 +154,5 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
         );
       },
     );
-  }
-}
-
-// Mock MessagesPage widget for demonstration
-class MessagesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Choose User'),
-      ),
-      body: ListView(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blue,
-              child: Text('A'),
-            ),
-            title: Text('User 1'),
-            onTap: () {
-              _sendNewsToUser(context, 'User 1');
-            },
-          ),
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.green,
-              child: Text('B'),
-            ),
-            title: Text('User 2'),
-            onTap: () {
-              _sendNewsToUser(context, 'User 2');
-            },
-          ),
-          // Add more ListTiles for other users as needed
-        ],
-      ),
-    );
-  }
-
-  void _sendNewsToUser(BuildContext context, String userName) {
-    // Implement the logic to send the news article to the selected user
-    Navigator.pop(context); // Close the messages page after sending
   }
 }
