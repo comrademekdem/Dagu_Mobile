@@ -1,29 +1,22 @@
+import 'package:dagu/models/news_aritcle.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LatestNewsCard extends StatefulWidget {
-  final String articleUrl;
+class LatestNewsCard extends StatelessWidget {
+  final NewsArticle article;
 
-  LatestNewsCard({required this.articleUrl});
-
-  @override
-  _LatestNewsCardState createState() => _LatestNewsCardState();
-}
-
-class _LatestNewsCardState extends State<LatestNewsCard> {
-  bool isLiked = false;
-  bool isBookmarked = false;
+  LatestNewsCard({required this.article});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        if (await canLaunch(widget.articleUrl)) {
-          await launch(widget.articleUrl);
+        if (await canLaunch(article.url)) {
+          await launch(article.url);
         } else {
-          throw 'Could not launch ${widget.articleUrl}';
+          throw 'Could not launch ${article.url}';
         }
       },
       child: Card(
@@ -37,8 +30,8 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'assets/images/homepage_placeholder_1.jpeg',
+                child: Image.network(
+                  article.urlToImage,
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -61,7 +54,7 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Crypto investors should be prepared to lose all their money, BOE governor says',
+                      article.title,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -70,12 +63,12 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'by Ryan Browne',
+                      'by ${article.author}',
                       style: TextStyle(color: Colors.grey[300]),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      '“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”',
+                      article.description,
                       style: TextStyle(color: Colors.grey[300]),
                     ),
                   ],
@@ -87,7 +80,7 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                 child: Container(
                   padding: EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0),
+                    color: Colors.black.withOpacity(0.4),
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -96,26 +89,12 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: Icon(
-                          isLiked ? Icons.favorite : Icons.favorite_border,
-                          color: isLiked ? Colors.red : Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isLiked = !isLiked;
-                          });
-                        },
+                        icon: Icon(Icons.favorite_border, color: Colors.white),
+                        onPressed: () {},
                       ),
                       IconButton(
-                        icon: Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.yellow : Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isBookmarked = !isBookmarked;
-                          });
-                        },
+                        icon: Icon(Icons.bookmark_border, color: Colors.white),
+                        onPressed: () {},
                       ),
                       IconButton(
                         icon: Icon(Icons.share, color: Colors.white),
@@ -145,7 +124,7 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                 leading: Icon(Icons.send),
                 title: Text('Share within Dagu'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MessagesPage()),
@@ -156,9 +135,9 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                 leading: Icon(Icons.share),
                 title: Text('Share outside'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
                   Share.share(
-                    'Check out this news article: Crypto investors should be prepared to lose all their money, BOE governor says',
+                    'Check out this news article: ${article.title}',
                     subject: 'News Article',
                   );
                 },
