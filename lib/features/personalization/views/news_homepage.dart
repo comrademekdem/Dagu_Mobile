@@ -1,16 +1,15 @@
 import 'package:dagu/features/messages/views/messages.dart';
-import 'package:dagu/features/personalization/views/category_chip.dart';
+import 'package:dagu/models/news_aritcle.dart';
+import 'package:dagu/utils/api_service/news_service.dart';
+import 'package:flutter/material.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/latest_news_card.dart';
-import 'package:dagu/features/personalization/views/news_article_card.dart';
 import 'package:dagu/features/profile_management/user_profile_details.dart';
 import 'package:dagu/features/search/search.dart';
-// import 'package:dagu/features/search/search_page.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:dagu/utils/theme/theme.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NewsHomePage extends StatefulWidget {
@@ -20,6 +19,13 @@ class NewsHomePage extends StatefulWidget {
 
 class _NewsHomePageState extends State<NewsHomePage> {
   int _currentIndex = 0;
+  late Future<List<NewsArticle>> _newsArticles;
+
+  @override
+  void initState() {
+    super.initState();
+    _newsArticles = NewsService().fetchNews();
+  }
 
   void _onTabTapped(int index) {
     setState(() {
@@ -36,7 +42,8 @@ class _NewsHomePageState extends State<NewsHomePage> {
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return MaterialApp(
-      title: 'Profile Page',
+      debugShowCheckedModeBanner: false,
+      title: 'News Home Page',
       theme: DaguAppTheme.lightTheme,
       darkTheme: DaguAppTheme.darkTheme,
       themeMode: ThemeMode.system,
@@ -66,144 +73,48 @@ class _NewsHomePageState extends State<NewsHomePage> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(
-              DaguSizes.defaultSpace,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 18, bottom: 18, left: 0, right: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: FutureBuilder<List<NewsArticle>>(
+          future: _newsArticles,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No news articles found.'));
+            } else {
+              final articles = snapshot.data!;
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(DaguSizes.defaultSpace),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Latest News',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          'Latest News',
+                          style: Theme.of(context).textTheme.headlineLarge,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // Navigate to see more page
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'See All',
-                              style: TextStyle(
-                                color: DaguColors.primaryColor,
-                              ),
-                            ),
-                            Icon(Icons.arrow_forward,
-                                color: DaguColors.primaryColor),
-                          ],
-                        ),
-                      ),
+                      ...articles.map((article) => LatestNewsCard(article: article)).toList(),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                // Horizontally scrollable news cards
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                      LatestNewsCard(articleUrl: "https://example.com"),
-                      SizedBox(width: 10),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 18, bottom: 18, left: 0, right: 0),
-                  child: Text(
-                    'Discover More',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                // Horizontally scrollable categories
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CategoryChip(label: 'Healthy'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Technology'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Finance'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Arts'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Sports'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Politics'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Science'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Education'),
-                      SizedBox(width: 10),
-                      CategoryChip(label: 'Travel'),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                // Vertically scrollable news articles with text over images
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-                NewsArticleCard(articleUrl: "https://example.com"),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
+              );
+            }
+          },
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex, // Add this line
-          items: const [
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
+              icon: Icon(Icons.star),
               label: 'For You',
             ),
             BottomNavigationBarItem(
@@ -211,7 +122,6 @@ class _NewsHomePageState extends State<NewsHomePage> {
               label: 'Messages',
             ),
           ],
-          onTap: _onTabTapped,
         ),
       ),
     );

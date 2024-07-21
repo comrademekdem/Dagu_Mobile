@@ -19,17 +19,17 @@ class AboutAppPage extends StatelessWidget {
             SizedBox(height: 16.0),
             Text(
               'Version: 1.0.0',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             SizedBox(height: 16.0),
             Text(
               'Dagu App is a personalized news and user management application that aims to provide users with the latest news and a seamless user experience. Stay updated with the latest news and manage your preferences easily.',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             SizedBox(height: 16.0),
             Text(
               'Developed by Fekadu Sisay, Mekdem Aemero, and Biruk Nigussie.',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
         ),
