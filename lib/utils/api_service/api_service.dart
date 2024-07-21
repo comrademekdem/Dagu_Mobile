@@ -17,7 +17,6 @@ class ApiService {
         'email': email,
       }),
     );
-    // Handle response as needed
     if (response.statusCode == 200) {
       print('Registration successful');
     } else {
@@ -37,10 +36,64 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return json.decode(response.body);
     } else {
-      print('Failed to login: ${response.statusCode}');
       throw Exception('Failed to login');
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserDetails(String token, int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/news/users/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('User details response status: ${response.statusCode}');
+      print('User details response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 404) {
+        print('User not found: ${response.statusCode}');
+        throw Exception('User not found');
+      } else {
+        print('Failed to get user details: ${response.statusCode}');
+        throw Exception('Failed to get user details');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw e;
+    }
+  }
+
+  Future<void> setUserPreferences(
+      String token, int userId, List<String> preferences) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/news/users/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'topics_selected': preferences
+            .map((topic) => {
+                  'id':
+                      0, // Backend might not need this, or could be used for reference
+                  'topic': topic
+                })
+            .toList()
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Preferences updated successfully');
+    } else {
+      print('Failed to update preferences: ${response.statusCode}');
+      throw Exception('Failed to update preferences');
     }
   }
 }

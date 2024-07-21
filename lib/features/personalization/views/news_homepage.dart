@@ -1,7 +1,7 @@
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/views/category_chip.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
-import 'package:dagu/features/personalization/views/lastest_news.dart';
+import 'package:dagu/features/personalization/views/latest_news_card.dart';
 import 'package:dagu/features/personalization/views/news_article_card.dart';
 import 'package:dagu/features/profile_management/user_profile_details.dart';
 import 'package:dagu/features/search/search.dart';
@@ -114,21 +114,21 @@ class _NewsHomePageState extends State<NewsHomePage> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
-                      LatestNewsCard(),
+                      LatestNewsCard(articleUrl: "https://example.com"),
                       SizedBox(width: 10),
                     ],
                   ),
@@ -175,21 +175,21 @@ class _NewsHomePageState extends State<NewsHomePage> {
                 SizedBox(height: 20),
 
                 // Vertically scrollable news articles with text over images
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
-                NewsArticleCard(),
+                NewsArticleCard(articleUrl: "https://example.com"),
                 SizedBox(height: 20),
               ],
             ),
