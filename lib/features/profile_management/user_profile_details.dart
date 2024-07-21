@@ -1,8 +1,11 @@
+import 'package:dagu/features/authentication/views/login/login.dart';
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/misc/about';
 import 'package:dagu/features/misc/helpAndSupport.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
+import 'package:dagu/features/personalization/views/preferences_choice.dart';
+import 'package:dagu/features/personalization/views/preferences_controller.dart';
 import 'package:dagu/features/profile_management/user_profile_edit.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
@@ -19,7 +22,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool isTwoFactorEnabled = false;
 
-  void _showConfirmationDialog(
+  void _showConfirmationDialogForReset(
       String title, String content, VoidCallback onConfirm) {
     showDialog(
       context: context,
@@ -37,8 +40,34 @@ class _ProfilePageState extends State<ProfilePage> {
             TextButton(
               child: Text("Confirm"),
               onPressed: () {
+                //Get.to(() => PreferencesView());
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showConfirmationDialogForLogout(
+      String title, String content, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
                 Navigator.of(context).pop();
-                onConfirm();
+              },
+            ),
+            TextButton(
+              child: Text("Confirm"),
+              onPressed: () {
+                Get.to(() => LoginView());
               },
             ),
           ],
@@ -51,9 +80,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
-      /*
-      
-      */
       appBar: AppBar(
         title: const Text('Edit Profile'),
       ),
@@ -189,11 +215,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: const EdgeInsets.only(right: 8.0),
                     ),
                     onTap: () {
-                      _showConfirmationDialog(
+                      _showConfirmationDialogForReset(
                         "Reset Preferences",
                         "Are you sure you want to reset preferences?",
                         () {
-                          // Handle reset preferences
+                          PreferencesController.isItWorking();
                         },
                       );
                     },
@@ -202,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     leading: Icon(Icons.exit_to_app),
                     title: Text('Log out'),
                     onTap: () {
-                      _showConfirmationDialog(
+                      _showConfirmationDialogForLogout(
                         "Log out",
                         "Are you sure you want to log out?",
                         () {},

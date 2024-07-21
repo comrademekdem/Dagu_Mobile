@@ -1,18 +1,18 @@
-import 'package:dagu/features/messages/views/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:dagu/features/messages/views/messages.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class NewsArticleCard extends StatefulWidget {
+class LatestNewsCard extends StatefulWidget {
   final String articleUrl;
 
-  NewsArticleCard({required this.articleUrl});
+  LatestNewsCard({required this.articleUrl});
 
   @override
-  _NewsArticleCardState createState() => _NewsArticleCardState();
+  _LatestNewsCardState createState() => _LatestNewsCardState();
 }
 
-class _NewsArticleCardState extends State<NewsArticleCard> {
+class _LatestNewsCardState extends State<LatestNewsCard> {
   bool isLiked = false;
   bool isBookmarked = false;
 
@@ -31,7 +31,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery.of(context).size.width * 0.8,
           height: 250,
           child: Stack(
             children: [
@@ -120,7 +120,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                       IconButton(
                         icon: Icon(Icons.share, color: Colors.white),
                         onPressed: () {
-                          _showShareOptions();
+                          showShareOptions(context);
                         },
                       ),
                     ],
@@ -134,10 +134,10 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
     );
   }
 
-  void _showShareOptions() {
+  void showShareOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return SafeArea(
           child: Wrap(
             children: <Widget>[

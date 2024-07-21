@@ -11,3 +11,10 @@ flutter_native_splash:
     image_dark: assets/images/logo.png
 
   web: false
+
+  android:
+    gravity: center
+    fullscreen: true
+  ios:
+    gravity: center
+    fullscreen: true

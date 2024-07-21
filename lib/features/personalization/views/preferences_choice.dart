@@ -1,11 +1,21 @@
 import 'package:dagu/features/personalization/views/news_homepage.dart';
+import 'package:dagu/features/personalization/views/topics_map.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:dagu/features/authentication/views/otp/otp.dart';
+import 'package:dagu/utils/api_service/api_service.dart';
 
 class PreferencesView extends StatefulWidget {
-  const PreferencesView({Key? key}) : super(key: key);
+  final String token;
+  final int userId;
+  final String firstName;
+
+  const PreferencesView({
+    Key? key,
+    required this.token,
+    required this.userId,
+    required this.firstName,
+  }) : super(key: key);
 
   @override
   _PreferencesViewState createState() => _PreferencesViewState();
@@ -15,53 +25,61 @@ class _PreferencesViewState extends State<PreferencesView> {
   final _formKey = GlobalKey<FormState>();
   List<String> selectedTopics = [];
 
+  final ApiService _apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     bool dark = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     List<String> topics = [
       "Politics",
-      "World",
       "Business",
-      "Tech",
-      "Climate",
+      "Technology",
+      "Entertainment",
       "Health",
-      "Culture",
       "Science",
-      "Sports",
       "Education",
-      "Obituaries",
-      "The Upshot",
-      "The Magazine",
-      "2024 Elections",
-      "Primary Results",
-      "Supreme Court",
-      "Congress",
-      "Biden Administration",
-      "Trump Investigations",
-      "Immigration",
-      "Abortion",
-      "Campus Protests",
-      "Audio",
-      "Podcasts",
-      "Narrated Articles",
-      "Newsletters",
-      "Games",
-      "Puzzles",
-      "Crosswords",
-      "Baseball",
-      "Soccer",
-      "Opinion",
-      "Lifestyle",
-      "Wellness",
+      "Environment",
+      "Crime",
+      "Human Interest",
       "Travel",
-      "Style",
+      "Opinion Editorial",
+      "Finance",
+      "Sports",
+      "Lifestyle",
+      "Automotive",
       "Real Estate",
-      "Food",
-      "Love",
-      "Your Money",
-      "Personal Tech",
-      "T Magazine"
+      "Fashion",
+      "Food and Dining",
+      "Arts and Culture",
+      "Books",
+      "Movies",
+      "Music",
+      "Photography",
+      "Gaming",
+      "Fitness",
+      "Nature",
+      "Wellness",
+      "Startups",
+      "Gadgets",
+      "Artificial Intelligence",
+      "Space",
+      "Robotics",
+      "Astronomy",
+      "Medicine",
+      "Mental Health",
+      "Nutrition",
+      "Psychology",
+      "Economics",
+      "Investment",
+      "Personal Finance",
+      "Cryptocurrency",
+      "Parenting",
+      "Home Improvement",
+      "Pets",
+      "Social Media",
+      "World News",
+      "Local News"
     ];
 
     return Scaffold(
@@ -77,11 +95,11 @@ class _PreferencesViewState extends State<PreferencesView> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: "Mekdem",
+                      text: "${widget.firstName}",
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF652D91), // DaguColors.primaryColor,
+                        color: Color(0xFF652D91),
                       ),
                     ),
                     TextSpan(
@@ -189,11 +207,31 @@ class _PreferencesViewState extends State<PreferencesView> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => NewsHomePage());
-                  },
+                  onPressed: selectedTopics.isEmpty
+                      ? null // Disable button if no topic selected
+                      : () async {
+                          if (selectedTopics.isNotEmpty) {
+                            // Map selected topics to backend-supported topics
+                            List<String> mappedTopics = selectedTopics
+                                .map((topic) => TopicsMap.topicMapping[topic]!)
+                                .toList();
+
+                            try {
+                              await _apiService.setUserPreferences(
+                                  widget.token, widget.userId, mappedTopics);
+                              Get.to(() => NewsHomePage());
+                            } catch (e) {
+                              print('Failed to update preferences: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Failed to update preferences')),
+                              );
+                            }
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF652D91), // Button color
+                    backgroundColor: Color(0xFF652D91),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),

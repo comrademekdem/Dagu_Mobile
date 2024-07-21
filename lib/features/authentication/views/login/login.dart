@@ -1,10 +1,13 @@
 import 'package:dagu/common/styles/spacing_styles.dart';
 import 'package:dagu/features/authentication/views/signup/signup.dart';
+import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -23,15 +26,38 @@ class _LoginViewState extends State<LoginView> {
   final _apiService = ApiService(); // Initialize ApiService
   final _emailOrUsernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _secureStorage = FlutterSecureStorage(); // Initialize secure storage
   bool _isPasswordVisible = false;
   bool _isRememberMeChecked = false;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoredCredentials(); // Load stored credentials on startup
+  }
 
   @override
   void dispose() {
     _emailOrUsernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadStoredCredentials() async {
+    final storedUsername = await _secureStorage.read(key: 'username');
+    final storedPassword = await _secureStorage.read(key: 'password');
+
+    if (storedUsername != null && storedPassword != null) {
+      _emailOrUsernameController.text = storedUsername;
+      _passwordController.text = storedPassword;
+      setState(() {
+        _isRememberMeChecked = true;
+      });
+
+      // Optionally, automatically sign in if credentials are loaded
+      // await _signIn();
+    }
   }
 
   Future<void> _signIn() async {
@@ -47,14 +73,41 @@ class _LoginViewState extends State<LoginView> {
       final username = _emailOrUsernameController.text.trim();
       final password = _passwordController.text.trim();
 
-      final response = await _apiService.login(username, password);
-      print(response);
-      Get.to(() =>
-          const PreferencesView()); // Navigate to next screen after successful login
+      final loginResponse = await _apiService.login(username, password);
+      print('Response from login: $loginResponse'); // Log the entire response
+
+      final refreshToken = loginResponse['refresh'];
+      final accessToken = loginResponse['access'];
+
+      // Save credentials if "Remember Me" is checked
+      if (_isRememberMeChecked) {
+        await _secureStorage.write(key: 'username', value: username);
+        await _secureStorage.write(key: 'password', value: password);
+      } else {
+        await _secureStorage.delete(key: 'username');
+        await _secureStorage.delete(key: 'password');
+      }
+
+      // Decode the refresh token to get user ID
+      final jwt = JWT.decode(refreshToken);
+      final userId = jwt.payload['user_id'];
+
+      final userDetails = await _apiService.getUserDetails(accessToken, userId);
+      final List<dynamic> topicsSelected = userDetails['topics_selected'];
+      final String first_name = userDetails['first_name'];
+      if (topicsSelected.isEmpty) {
+        Get.to(() => PreferencesView(
+              token: accessToken,
+              userId: userId,
+              firstName: first_name,
+            )); // Navigate to preferences view
+      } else {
+        Get.to(() => NewsHomePage()); // Navigate to home view
+      }
     } catch (e) {
       print('Login failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to login')),
+        const SnackBar(content: Text('Failed to login')),
       );
     } finally {
       setState(() {
