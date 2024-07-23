@@ -1,9 +1,12 @@
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MessagesPage extends StatefulWidget {
+  late final User user;
+  MessagesPage({required this.user});
   @override
   _MessagesPageState createState() => _MessagesPageState();
 }
@@ -16,9 +19,11 @@ class _MessagesPageState extends State<MessagesPage> {
       _currentIndex = index;
     });
     if (index == 0) {
-      Get.to(() => NewsHomePage());
+      Get.to(() => NewsHomePage(user: widget.user));
     } else if (index == 1) {
-      Get.to(() => ForYouPage());
+      Get.to(() => ForYouPage(
+            user: widget.user,
+          ));
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:dagu/common/styles/spacing_styles.dart';
 import 'package:dagu/features/authentication/views/signup/signup.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:dagu/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
@@ -94,15 +95,32 @@ class _LoginViewState extends State<LoginView> {
 
       final userDetails = await _apiService.getUserDetails(accessToken, userId);
       final List<dynamic> topicsSelected = userDetails['topics_selected'];
-      final String first_name = userDetails['first_name'];
-      if (topicsSelected.isEmpty) {
+      final String firstName = userDetails['first_name'];
+
+      final List<Topic> topics = topicsSelected.map((topic) {
+        return Topic(
+          id: topic['id'],
+          topic: topic['topic'],
+        );
+      }).toList();
+
+      final User user = User(
+        id: userDetails['id'],
+        username: userDetails['username'],
+        firstName: userDetails['first_name'],
+        lastName: userDetails['last_name'],
+        email: userDetails['email'],
+        topicsSelected: topics,
+        profilePic: userDetails['profile_pic'],
+        lastLogin: DateTime.parse(userDetails['last_login']),
+      );
+
+      if (topics.isEmpty) {
         Get.to(() => PreferencesView(
-              token: accessToken,
-              userId: userId,
-              firstName: first_name,
+              user: user,
             )); // Navigate to preferences view
       } else {
-        Get.to(() => NewsHomePage()); // Navigate to home view
+        Get.to(() => NewsHomePage(user: user)); // Pass user to home view
       }
     } catch (e) {
       print('Login failed: $e');

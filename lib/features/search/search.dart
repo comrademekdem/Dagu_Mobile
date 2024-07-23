@@ -1,5 +1,7 @@
 import 'package:dagu/features/messages/views/messages.dart';
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
+import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:dagu/utils/constants/colors.dart';
 import 'package:dagu/utils/constants/sizes.dart';
@@ -7,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 class SearchPage extends StatefulWidget {
+  final User user;
+  const SearchPage({required this.user});
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -85,10 +89,15 @@ class _SearchPageState extends State<SearchPage> {
         ],
         onTap: (int index) {
           if (index == 0) {
+            Get.to(() => NewsHomePage(
+                  user: widget.user,
+                ));
           } else if (index == 1) {
-            Get.to(() => ForYouPage());
+            Get.to(() => ForYouPage(
+                  user: widget.user,
+                ));
           } else if (index == 2) {
-            Get.to(() => MessagesPage());
+            Get.to(() => MessagesPage(user: widget.user));
           }
         },
       ),

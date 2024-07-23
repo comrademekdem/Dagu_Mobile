@@ -1,9 +1,13 @@
 import 'package:dagu/features/messages/views/messages.dart';
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LikedNewsCard extends StatelessWidget {
+  late final User user;
   void _showPopupMenu(BuildContext context, Offset offset) async {
     await showMenu(
       context: context,
@@ -42,10 +46,9 @@ class LikedNewsCard extends StatelessWidget {
                 title: Text('Share within Dagu'),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MessagesPage()),
-                  );
+                  Get.to(() => MessagesPage(
+                        user: user,
+                      ));
                 },
               ),
               ListTile(
