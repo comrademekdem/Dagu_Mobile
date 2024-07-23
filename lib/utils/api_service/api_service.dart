@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -17,11 +18,8 @@ class ApiService {
         'email': email,
       }),
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print('Registration successful');
-    } else {
-      print('Failed to register: ${response.statusCode}');
-      throw Exception('Failed to register');
     }
   }
 
@@ -70,13 +68,13 @@ class ApiService {
     }
   }
 
-  Future<void> setUserPreferences(
-      String token, int userId, List<String> preferences) async {
+  Future<void> setUserPreferences(User user, List<String> preferences) async {
+    int id = user.id;
     final response = await http.patch(
-      Uri.parse('$baseUrl/news/users/$userId'),
+      Uri.parse('$baseUrl/news/users/$id'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        // 'Authorization': 'Bearer $token',
       },
       body: json.encode({
         'topics_selected': preferences
@@ -94,6 +92,78 @@ class ApiService {
     } else {
       print('Failed to update preferences: ${response.statusCode}');
       throw Exception('Failed to update preferences');
+    }
+  }
+
+  Future<void> likeArticle(int userId, int newsId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/news/liked/$userId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'user_id': userId,
+        'news_id': newsId,
+        'liked': true,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful response
+      print('Article liked successfully');
+    } else {
+      // Handle error
+      print('Failed to like article');
+      print(response.body);
+    }
+  }
+
+  Future<void> bookmarkArticle(int userId, int newsId) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/news/bookmarked/$userId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'user_id': userId,
+        'news_id': newsId,
+        'bookmarked': true,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful response
+      print('Article Bookmarked successfully');
+    } else {
+      // Handle error
+      print('Failed to bookmark article');
+      print(response.body);
+    }
+  }
+
+  Future<void> updateUserDetails(int userId, String firstName, String lastName,
+      String username, String profilePic, String email) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/news/users/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'first_name': firstName,
+        'last_name': lastName,
+        'username': username,
+        'profile_pic': profilePic,
+        'email': email,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('User details updated successfully');
+    } else {
+      print('Failed to update user details: ${response.statusCode}');
+      print(response.body);
+      throw Exception('Failed to update user details');
     }
   }
 }

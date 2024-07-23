@@ -1,3 +1,4 @@
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:dagu/features/personalization/views/topics_map.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +7,11 @@ import 'package:iconsax/iconsax.dart';
 import 'package:dagu/utils/api_service/api_service.dart';
 
 class PreferencesView extends StatefulWidget {
-  final String token;
-  final int userId;
-  final String firstName;
+  final User user;
 
   const PreferencesView({
-    Key? key,
-    required this.token,
-    required this.userId,
-    required this.firstName,
-  }) : super(key: key);
+    required this.user,
+  });
 
   @override
   _PreferencesViewState createState() => _PreferencesViewState();
@@ -95,7 +91,7 @@ class _PreferencesViewState extends State<PreferencesView> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: "${widget.firstName}",
+                      text: "${widget.user.firstName}",
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w700,
@@ -218,8 +214,8 @@ class _PreferencesViewState extends State<PreferencesView> {
 
                             try {
                               await _apiService.setUserPreferences(
-                                  widget.token, widget.userId, mappedTopics);
-                              Get.to(() => NewsHomePage());
+                                  widget.user, mappedTopics);
+                              Get.to(() => NewsHomePage(user: widget.user));
                             } catch (e) {
                               print('Failed to update preferences: $e');
                               ScaffoldMessenger.of(context).showSnackBar(

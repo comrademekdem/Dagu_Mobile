@@ -1,31 +1,73 @@
-import 'dart:io';
-
+import 'package:dagu/features/profile_management/user_profile_details.dart';
+import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:dagu/features/personalization/models/user.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+// import 'package:dagu/services/api_service.dart'; // Ensure this is the correct path
 
 class UserProfileEditPage extends StatefulWidget {
+  final User user;
+
+  UserProfileEditPage({required this.user});
+
   @override
   _UserProfileEditPageState createState() => _UserProfileEditPageState();
 }
 
 class _UserProfileEditPageState extends State<UserProfileEditPage> {
   final _formKey = GlobalKey<FormState>();
-  File? _image;
-  // final picker = ImagePicker();
+  final ApiService _apiService = ApiService();
 
-  // Future<void> _pickImage() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  late String firstName;
+  late String lastName;
+  late String username;
+  late String profilePic;
+  late String email;
 
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _image = File(pickedFile.path);
-  //     }
-  //   });
-  // }
+  bool _isChanged = false;
 
-  String _firstName = "";
-  String _lastName = "";
-  String _username = "";
-  String _email = "";
+  void _update() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      try {
+        int userId = widget.user.id;
+
+        await _apiService.updateUserDetails(
+          userId,
+          firstName,
+          lastName,
+          username,
+          profilePic,
+          email,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile updated successfully')),
+        );
+
+        // Update the local user object with new values while retaining unchanged fields
+        User updatedUser = User(
+          id: widget.user.id,
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          profilePic: profilePic,
+          email: email,
+          topicsSelected: widget.user.topicsSelected, // Retain topicsSelected
+          lastLogin: widget.user.lastLogin, // Retain lastLogin
+        );
+        Get.to(() => ProfilePage(user: updatedUser));
+        // Navigate to NewsHomePage with the updated user object
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: $e')),
+        );
+      }
+    }
+  }
+
   void _showConfirmationDialog(
       String title, String content, VoidCallback onConfirm) {
     showDialog(
@@ -55,6 +97,16 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    firstName = widget.user.firstName;
+    lastName = widget.user.lastName;
+    username = widget.user.username;
+    profilePic = widget.user.profilePic;
+    email = widget.user.email;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -67,83 +119,109 @@ class _UserProfileEditPageState extends State<UserProfileEditPage> {
           child: ListView(
             children: [
               Center(
-                child: GestureDetector(
-                  // onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: _image != null ? FileImage(_image!) : null,
-                    child: _image == null
-                        ? const Icon(Icons.camera_alt,
-                            size: 50, color: Colors.white)
-                        : null,
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: ClipOval(
+                    child: Image.network(
+                      profilePic,
+                      fit: BoxFit.cover,
+                      width: 120,
+                      height: 120,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               TextFormField(
-                initialValue: "Fekadu",
+                initialValue: firstName,
                 decoration: const InputDecoration(labelText: 'First Name'),
-                onSaved: (value) => _firstName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your first name';
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  if (value != firstName) {
+                    setState(() {
+                      _isChanged = true;
+                      firstName = value;
+                    });
+                  }
+                },
+                onSaved: (value) => firstName = value!,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               TextFormField(
-                initialValue: "Sisay",
+                initialValue: lastName,
                 decoration: const InputDecoration(labelText: 'Last Name'),
-                onSaved: (value) => _lastName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your last name';
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  if (value != lastName) {
+                    setState(() {
+                      _isChanged = true;
+                      lastName = value;
+                    });
+                  }
+                },
+                onSaved: (value) => lastName = value!,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               TextFormField(
-                initialValue: "fekaduS",
-                decoration: InputDecoration(labelText: 'Username'),
-                onSaved: (value) => _username = value!,
+                initialValue: username,
+                decoration: const InputDecoration(labelText: 'Username'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  if (value != username) {
+                    setState(() {
+                      _isChanged = true;
+                      username = value;
+                    });
+                  }
+                },
+                onSaved: (value) => username = value!,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               TextFormField(
-                initialValue: "fekadusisay@gmail.com",
+                initialValue: email,
                 decoration: const InputDecoration(labelText: 'Email'),
-                onSaved: (value) => _email = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
                   return null;
                 },
+                onChanged: (value) {
+                  if (value != email) {
+                    setState(() {
+                      _isChanged = true;
+                      email = value;
+                    });
+                  }
+                },
+                onSaved: (value) => email = value!,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _showConfirmationDialog(
-                      "Reset Preferences",
-                      "Are you sure you want to reset preferences?",
-                      () {
-                        // Handle reset preferences
-                      },
-                    );
-                  }
-                },
+                onPressed: _isChanged
+                    ? () {
+                        _showConfirmationDialog(
+                          "Update Profile Details",
+                          "Are you sure you want to update the above profile details?",
+                          _update,
+                        );
+                      }
+                    : null, // Disable button if no changes
                 child: const Text('Update Profile'),
               ),
             ],

@@ -17,7 +17,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-    debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: DaguAppTheme.lightTheme,
       darkTheme: DaguAppTheme.darkTheme,

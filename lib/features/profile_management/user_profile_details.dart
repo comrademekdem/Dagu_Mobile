@@ -2,6 +2,7 @@ import 'package:dagu/features/authentication/views/login/login.dart';
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/misc/about';
 import 'package:dagu/features/misc/helpAndSupport.dart';
+import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/foryou_page.dart';
 import 'package:dagu/features/personalization/views/news_homepage.dart';
 import 'package:dagu/features/personalization/views/preferences_choice.dart';
@@ -15,12 +16,28 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProfilePage extends StatefulWidget {
+  final User user;
+  ProfilePage({required this.user});
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? firstName;
+  String? lastName;
+  String? username;
+  String? profilePic;
+
   bool isTwoFactorEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    firstName = widget.user.firstName;
+    lastName = widget.user.lastName;
+    username = widget.user.username;
+    profilePic = widget.user.profilePic;
+  }
 
   void _showConfirmationDialogForReset(
       String title, String content, VoidCallback onConfirm) {
@@ -40,7 +57,9 @@ class _ProfilePageState extends State<ProfilePage> {
             TextButton(
               child: Text("Confirm"),
               onPressed: () {
-                //Get.to(() => PreferencesView());
+                Get.to(() => PreferencesView(
+                      user: widget.user,
+                    ));
               },
             ),
           ],
@@ -115,8 +134,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/avatar.png', // Add your avatar image in assets folder
+                          child: Image.network(
+                            profilePic!,
                             fit: BoxFit.cover,
                             width: 90,
                             height: 90,
@@ -124,20 +143,20 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       SizedBox(width: 16.0),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Fekadu Sisay',
-                              style: TextStyle(
+                              '$firstName $lastName',
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              'fekadusisay@gmail.com',
+                              '@$username',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -148,7 +167,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.white),
                         onPressed: () {
-                          Get.to(() => UserProfileEditPage());
+                          Get.to(() => UserProfileEditPage(
+                                user: widget.user,
+                              ));
                         },
                       ),
                     ],
@@ -181,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Icon(Icons.arrow_forward_ios, size: 20),
                     ),
                     onTap: () {
-                      Get.to(() => UserProfileEditPage());
+                      Get.to(() => UserProfileEditPage(user: widget.user));
                     },
                   ),
                   Divider(
@@ -296,11 +317,13 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
         onTap: (int index) {
           if (index == 0) {
-            Get.to(() => NewsHomePage());
+            Get.to(() => NewsHomePage(
+                  user: widget.user,
+                ));
           } else if (index == 1) {
-            Get.to(() => ForYouPage());
+            Get.to(() => ForYouPage(user: widget.user));
           } else if (index == 2) {
-            Get.to(() => MessagesPage());
+            Get.to(() => MessagesPage(user: widget.user));
           }
         },
       ),

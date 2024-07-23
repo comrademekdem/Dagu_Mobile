@@ -1,4 +1,7 @@
 import 'package:dagu/features/messages/views/messages.dart';
+import 'package:dagu/features/personalization/models/user.dart';
+import 'package:dagu/features/personalization/views/category_chip.dart';
+import 'package:dagu/features/personalization/views/news_article_card.dart';
 import 'package:dagu/models/news_aritcle.dart';
 import 'package:dagu/utils/api_service/news_service.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +16,10 @@ import 'package:dagu/utils/theme/theme.dart';
 import 'package:get/get.dart';
 
 class NewsHomePage extends StatefulWidget {
+  final User user;
+
+  NewsHomePage({required this.user});
+
   @override
   _NewsHomePageState createState() => _NewsHomePageState();
 }
@@ -32,9 +39,13 @@ class _NewsHomePageState extends State<NewsHomePage> {
       _currentIndex = index;
     });
     if (index == 1) {
-      Get.to(() => ForYouPage());
+      Get.to(() => ForYouPage(
+            user: widget.user,
+          ));
     } else if (index == 2) {
-      Get.to(() => MessagesPage());
+      Get.to(() => MessagesPage(
+            user: widget.user,
+          ));
     }
   }
 
@@ -61,14 +72,18 @@ class _NewsHomePageState extends State<NewsHomePage> {
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                Get.to(() => SearchPage());
+                Get.to(() => SearchPage(
+                      user: widget.user,
+                    ));
               },
             ),
             IconButton(
               icon: Icon(Icons.person,
                   color: dark ? Colors.white : DaguColors.primaryColor),
               onPressed: () {
-                Get.to(() => ProfilePage());
+                Get.to(() => ProfilePage(
+                      user: widget.user,
+                    ));
               },
             ),
           ],
@@ -79,6 +94,7 @@ class _NewsHomePageState extends State<NewsHomePage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
+              print("This error");
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(child: Text('No news articles found.'));
@@ -97,7 +113,60 @@ class _NewsHomePageState extends State<NewsHomePage> {
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                       ),
-                      ...articles.map((article) => LatestNewsCard(article: article)).toList(),
+                      // Horizontally scrollable latest news cards
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: articles
+                              .take(8)
+                              .map((article) => Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: LatestNewsCard(
+                                      article: article,
+                                      user: widget.user,
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 18, bottom: 18, left: 0, right: 0),
+                        child: Text(
+                          'Discover More',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      // Horizontally scrollable categories
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: widget.user.topicsSelected.map((topic) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: CategoryChip(label: topic.topic),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      // Vertically scrollable news articles
+                      Column(
+                        children: articles
+                            .map((article) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 20.0),
+                                  child: NewsArticleCard(
+                                      article: article,
+                                      articleUrl: article.url,
+                                      user: widget.user),
+                                ))
+                            .toList(),
+                      ),
                     ],
                   ),
                 ),

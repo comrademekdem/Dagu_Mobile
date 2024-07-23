@@ -1,13 +1,19 @@
 import 'package:dagu/features/messages/views/messages.dart';
+import 'package:dagu/features/personalization/models/user.dart';
+import 'package:dagu/features/personalization/views/article_detail_page.dart';
+import 'package:dagu/models/news_aritcle.dart';
+import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsArticleCard extends StatefulWidget {
-  final String articleUrl;
-
-  NewsArticleCard({required this.articleUrl});
-
+  final NewsArticle article;
+  final User user;
+  NewsArticleCard(
+      {required this.article, required articleUrl, required this.user});
   @override
   _NewsArticleCardState createState() => _NewsArticleCardState();
 }
@@ -16,15 +22,42 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
   bool isLiked = false;
   bool isBookmarked = false;
 
+  void initState() {
+    super.initState();
+
+    isLiked = widget.article.liked;
+    isBookmarked = widget.article.bookmarked;
+  }
+
+  Future<void> _toggleLike() async {
+    setState(() {
+      isLiked = !isLiked;
+    });
+
+    try {
+      await ApiService().likeArticle(widget.user.id, 2);
+    } catch (e) {
+      print('Failed to like/unlike article: $e');
+    }
+  }
+
+  Future<void> _toggleBookmark() async {
+    setState(() {
+      isBookmarked = !isBookmarked;
+    });
+
+    try {
+      await ApiService().bookmarkArticle(widget.user.id, 2);
+    } catch (e) {
+      print('Failed to bookmark article/remove article from bookmark: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        if (await canLaunch(widget.articleUrl)) {
-          await launch(widget.articleUrl);
-        } else {
-          throw 'Could not launch ${widget.articleUrl}';
-        }
+      onTap: () {
+        Get.to(() => ArticleDetailPage(article: widget.article));
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -37,8 +70,8 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'assets/images/homepage_placeholder_1.jpeg',
+                child: Image.network(
+                  widget.article.urlToImage,
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -61,7 +94,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Crypto investors should be prepared to lose all their money, BOE governor says',
+                      widget.article.title,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -70,12 +103,12 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'by Ryan Browne',
+                      'by ${widget.article.author}',
                       style: TextStyle(color: Colors.grey[300]),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      '“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”',
+                      widget.article.description,
                       style: TextStyle(color: Colors.grey[300]),
                     ),
                   ],
@@ -96,31 +129,23 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: Icon(
-                          isLiked ? Icons.favorite : Icons.favorite_border,
-                          color: isLiked ? Colors.red : Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isLiked = !isLiked;
-                          });
-                        },
-                      ),
+                          icon: Icon(
+                            isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: isLiked ? Colors.red : Colors.white,
+                          ),
+                          onPressed: _toggleLike),
                       IconButton(
-                        icon: Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.yellow : Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isBookmarked = !isBookmarked;
-                          });
-                        },
-                      ),
+                          icon: Icon(
+                            isBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            color: isBookmarked ? Colors.yellow : Colors.white,
+                          ),
+                          onPressed: _toggleBookmark),
                       IconButton(
                         icon: Icon(Icons.share, color: Colors.white),
                         onPressed: () {
-                          _showShareOptions();
+                          showShareOptions();
                         },
                       ),
                     ],
@@ -134,7 +159,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
     );
   }
 
-  void _showShareOptions() {
+  void showShareOptions() {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -146,10 +171,9 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                 title: Text('Share within Dagu'),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MessagesPage()),
-                  );
+                  Get.to(() => MessagesPage(
+                        user: widget.user,
+                      ));
                 },
               ),
               ListTile(
