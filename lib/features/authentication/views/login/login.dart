@@ -235,28 +235,21 @@ class _LoginViewState extends State<LoginView> {
                             ],
                           ),
                           TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ForgotPassword(),
-                                ),
-                              );
-                            },
+                            onPressed: () {},
                             child: const Text("Forgot Password"),
                           ),
                         ],
                       ),
                       const SizedBox(height: DaguSizes.spaceBtwSections),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _signIn,
-                          child: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text("Sign In"),
-                        ),
-                      ),
+                      _isLoading
+                          ? const CircularProgressIndicator()
+                          : SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: _signIn,
+                                child: const Text("Sign In"),
+                              ),
+                            ),
                       const SizedBox(height: DaguSizes.spaceBtwItems),
                       SizedBox(
                         width: double.infinity,
@@ -300,25 +293,15 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: DaguColors.grey),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Image(
-                        width: DaguSizes.iconMd,
-                        height: DaguSizes.iconMd,
-                        image: AssetImage("assets/icons/google_icon.png"),
-                      ),
-                    ),
-                  ),
-                ],
+              IconButton(
+                onPressed: () {},
+                icon: Image.asset(
+                  "assets/icons/google_icon.png",
+                  width: 35,
+                  height: 35,
+                ),
               ),
+              const SizedBox(width: 20),
             ],
           ),
         ),

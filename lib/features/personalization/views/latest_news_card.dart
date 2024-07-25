@@ -1,15 +1,13 @@
 import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/article_detail_page.dart';
+
+import 'package:dagu/features/personalization/views/socials_page.dart';
 import 'package:dagu/models/news_aritcle.dart';
+
 import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:dagu/features/messages/views/messages.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class LatestNewsCard extends StatefulWidget {
   final NewsArticle article;
@@ -25,6 +23,7 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
   bool isLiked = false;
   bool isBookmarked = false;
 
+  @override
   void initState() {
     super.initState();
 
@@ -38,7 +37,9 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
     });
 
     try {
-      await ApiService().likeArticle(widget.user.id, 2);
+      int newsId = await ApiService().storeNewsArticle(widget.article);
+      int userId = widget.user.id;
+      await ApiService().likeArticle(userId, newsId);
     } catch (e) {
       print('Failed to like/unlike article: $e');
     }
@@ -50,7 +51,9 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
     });
 
     try {
-      await ApiService().bookmarkArticle(widget.user.id, 2);
+      int newsId = await ApiService().storeNewsArticle(widget.article);
+      int userId = widget.user.id;
+      await ApiService().bookmarkArticle(userId, newsId);
     } catch (e) {
       print('Failed to bookmark article/remove article from bookmark: $e');
     }
@@ -74,7 +77,8 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
-                  widget.article.urlToImage,
+                  widget.article.urlToImage ??
+                      "https://static1.anpoimages.com/wordpress/wp-content/uploads/wm/2024/07/android-recovery-factory-reset-wipe-hero.jpg",
                   height: 225,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -139,18 +143,15 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                         onPressed: _toggleLike,
                       ),
                       IconButton(
-                          icon: Icon(
-                            isBookmarked
-                                ? Icons.bookmark
-                                : Icons.bookmark_border,
-                            color: isBookmarked ? Colors.yellow : Colors.white,
-                          ),
-                          onPressed: _toggleBookmark),
+                        icon: Icon(
+                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                          color: isBookmarked ? Colors.yellow : Colors.white,
+                        ),
+                        onPressed: _toggleBookmark,
+                      ),
                       IconButton(
                         icon: Icon(Icons.share, color: Colors.white),
-                        onPressed: () {
-                          showShareOptions();
-                        },
+                        onPressed: showShareOptions,
                       ),
                     ],
                   ),
@@ -173,10 +174,12 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
               ListTile(
                 leading: Icon(Icons.send),
                 title: Text('Share within Dagu'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context); // Close the bottom sheet
-                  Get.to(() => MessagesPage(
-                        user: widget.user,
+
+                  Get.to(() => SocialsPage(
+                        articleToShare: widget.article,
+                        senderUser: widget.user,
                       ));
                 },
               ),
@@ -184,10 +187,11 @@ class _LatestNewsCardState extends State<LatestNewsCard> {
                 leading: Icon(Icons.share),
                 title: Text('Share outside'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
+                  String url = widget.article.url;
                   Share.share(
-                    'Check out this news article: Crypto investors should be prepared to lose all their money, BOE governor says',
-                    subject: 'News Article',
+                    'Sent from Dagu News App.\n$url',
+                    subject: widget.article.description,
                   );
                 },
               ),
