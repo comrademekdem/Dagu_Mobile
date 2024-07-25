@@ -122,7 +122,7 @@ class _SignUpViewState extends State<SignUpView> {
         _passwordController.text,
         _emailController.text,
       );
-      Get.to(() => const OTPView());
+      Get.to(() => OTPView(email: _emailController.text));
     } catch (e) {
       setState(() {
         _errorMessage =
@@ -322,13 +322,13 @@ class _SignUpViewState extends State<SignUpView> {
                               child: const Text("Continue"),
                             ),
                             const SizedBox(height: DaguSizes.spaceBtwItems),
-                            OutlinedButton.icon(
+                            IconButton(
                               onPressed: _signUpWithGoogle,
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 50),
+                              icon: Image.asset(
+                                "assets/icons/google_icon.png",
+                                width: 35,
+                                height: 35,
                               ),
-                              icon: Icon(Icons.person),
-                              label: const Text("Sign Up with Google"),
                             ),
                           ],
                         ),

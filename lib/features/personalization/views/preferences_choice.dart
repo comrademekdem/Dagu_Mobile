@@ -20,6 +20,7 @@ class PreferencesView extends StatefulWidget {
 class _PreferencesViewState extends State<PreferencesView> {
   final _formKey = GlobalKey<FormState>();
   List<String> selectedTopics = [];
+  bool isLoading = false; // Add a loading state variable
 
   final ApiService _apiService = ApiService();
 
@@ -206,24 +207,30 @@ class _PreferencesViewState extends State<PreferencesView> {
                   onPressed: selectedTopics.isEmpty
                       ? null // Disable button if no topic selected
                       : () async {
-                          if (selectedTopics.isNotEmpty) {
-                            // Map selected topics to backend-supported topics
-                            List<String> mappedTopics = selectedTopics
-                                .map((topic) => TopicsMap.topicMapping[topic]!)
-                                .toList();
+                          setState(() {
+                            isLoading = true; // Set loading to true
+                          });
 
-                            try {
-                              await _apiService.setUserPreferences(
-                                  widget.user, mappedTopics);
-                              Get.to(() => NewsHomePage(user: widget.user));
-                            } catch (e) {
-                              print('Failed to update preferences: $e');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Failed to update preferences')),
-                              );
-                            }
+                          // Map selected topics to backend-supported topics
+                          List<String> mappedTopics = selectedTopics
+                              .map((topic) => TopicsMap.topicMapping[topic]!)
+                              .toList();
+
+                          try {
+                            await _apiService.setUserPreferences(
+                                widget.user, mappedTopics);
+                            Get.to(() => NewsHomePage(user: widget.user));
+                          } catch (e) {
+                            print('Failed to update preferences: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Failed to update preferences')),
+                            );
+                          } finally {
+                            setState(() {
+                              isLoading = false; // Set loading to false
+                            });
                           }
                         },
                   style: ElevatedButton.styleFrom(
@@ -233,13 +240,18 @@ class _PreferencesViewState extends State<PreferencesView> {
                     ),
                     padding: const EdgeInsets.all(15),
                   ),
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          "Submit",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                 ),
               ),
             ],

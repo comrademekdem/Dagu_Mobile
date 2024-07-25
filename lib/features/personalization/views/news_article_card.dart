@@ -1,6 +1,7 @@
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/models/user.dart';
 import 'package:dagu/features/personalization/views/article_detail_page.dart';
+import 'package:dagu/features/personalization/views/socials_page.dart';
 import 'package:dagu/models/news_aritcle.dart';
 import 'package:dagu/utils/api_service/api_service.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 class NewsArticleCard extends StatefulWidget {
   final NewsArticle article;
   final User user;
-  NewsArticleCard(
-      {required this.article, required articleUrl, required this.user});
+  NewsArticleCard({required this.article, required this.user});
   @override
   _NewsArticleCardState createState() => _NewsArticleCardState();
 }
@@ -35,7 +35,9 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
     });
 
     try {
-      await ApiService().likeArticle(widget.user.id, 2);
+      int newsId = await ApiService().storeNewsArticle(widget.article);
+      int userId = widget.user.id;
+      await ApiService().likeArticle(userId, newsId);
     } catch (e) {
       print('Failed to like/unlike article: $e');
     }
@@ -47,7 +49,9 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
     });
 
     try {
-      await ApiService().bookmarkArticle(widget.user.id, 2);
+      int newsId = await ApiService().storeNewsArticle(widget.article);
+      int userId = widget.user.id;
+      await ApiService().bookmarkArticle(userId, newsId);
     } catch (e) {
       print('Failed to bookmark article/remove article from bookmark: $e');
     }
@@ -169,10 +173,12 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
               ListTile(
                 leading: Icon(Icons.send),
                 title: Text('Share within Dagu'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context); // Close the bottom sheet
-                  Get.to(() => MessagesPage(
-                        user: widget.user,
+
+                  Get.to(() => SocialsPage(
+                        articleToShare: widget.article,
+                        senderUser: widget.user,
                       ));
                 },
               ),
@@ -180,10 +186,11 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                 leading: Icon(Icons.share),
                 title: Text('Share outside'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
+                  String url = widget.article.url;
                   Share.share(
-                    'Check out this news article: Crypto investors should be prepared to lose all their money, BOE governor says',
-                    subject: 'News Article',
+                    'Sent from Dagu News App.\n$url',
+                    subject: widget.article.description,
                   );
                 },
               ),

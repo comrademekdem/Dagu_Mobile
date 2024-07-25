@@ -100,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
     bool dark = DaguHelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('User Profile Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -108,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             SizedBox(height: DaguSizes.spaceBtwSections),
             Text(
-              "User Details",
+              "Your Profile",
               textAlign: TextAlign.left, // Align to the left
               style: Theme.of(context).textTheme.headlineMedium,
             ),
@@ -299,33 +299,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'For You',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-        ],
-        onTap: (int index) {
-          if (index == 0) {
-            Get.to(() => NewsHomePage(
-                  user: widget.user,
-                ));
-          } else if (index == 1) {
-            Get.to(() => ForYouPage(user: widget.user));
-          } else if (index == 2) {
-            Get.to(() => MessagesPage(user: widget.user));
-          }
-        },
       ),
     );
   }

@@ -1,13 +1,24 @@
 import 'package:dagu/features/messages/views/messages.dart';
 import 'package:dagu/features/personalization/models/user.dart';
+import 'package:dagu/features/personalization/views/article_detail_page.dart';
+import 'package:dagu/features/personalization/views/socials_page.dart';
+import 'package:dagu/models/news_aritcle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SavedNewsCard extends StatelessWidget {
-  late final User user;
+class SavedNewsCard extends StatefulWidget {
+  final NewsArticle article;
+  final User user;
+
+  SavedNewsCard({required this.article, required this.user});
+  @override
+  _SavedNewsCardState createState() => _SavedNewsCardState();
+}
+
+class _SavedNewsCardState extends State<SavedNewsCard> {
   void _showPopupMenu(BuildContext context, Offset offset) async {
     await showMenu(
       context: context,
@@ -15,7 +26,7 @@ class SavedNewsCard extends StatelessWidget {
       items: [
         PopupMenuItem<String>(
           value: 'remove',
-          child: Text('Remove from Saved'),
+          child: Text('Remove from Bookmarked'),
         ),
         PopupMenuItem<String>(
           value: 'send',
@@ -26,28 +37,30 @@ class SavedNewsCard extends StatelessWidget {
     ).then((selectedItem) {
       if (selectedItem != null) {
         if (selectedItem == 'remove') {
-          // Handle remove from saved logic
+          // Handle remove from liked logic
         } else if (selectedItem == 'send') {
-          showShareOptions(context);
+          showShareOptions();
         }
       }
     });
   }
 
-  void showShareOptions(BuildContext context) {
+  void showShareOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return SafeArea(
           child: Wrap(
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.send),
                 title: Text('Share within Dagu'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context); // Close the bottom sheet
-                  Get.to(() => MessagesPage(
-                        user: user,
+
+                  Get.to(() => SocialsPage(
+                        articleToShare: widget.article,
+                        senderUser: widget.user,
                       ));
                 },
               ),
@@ -55,10 +68,11 @@ class SavedNewsCard extends StatelessWidget {
                 leading: Icon(Icons.share),
                 title: Text('Share outside'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
+                  String url = widget.article.url;
                   Share.share(
-                    'Check out this news article: Crypto investors should be prepared to lose all their money, BOE governor says',
-                    subject: 'News Article',
+                    'Sent from Dagu News App.\n$url',
+                    subject: widget.article.description,
                   );
                 },
               ),
@@ -77,43 +91,12 @@ class SavedNewsCard extends StatelessWidget {
     _showPopupMenu(context, position);
   }
 
-  Future<void> _showLeavePageDialog(BuildContext context) async {
-    bool? confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Leave this page?'),
-        content:
-            Text('Do you really want to leave this page to view the article?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      // Replace the URL with the actual article URL
-      const url = 'https://example.com/news-article';
-      if (await canLaunch(url)) {
-        await launch(url);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch the article')),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showLeavePageDialog(context),
+      onTap: () {
+        Get.to(() => ArticleDetailPage(article: widget.article));
+      },
       onLongPress: () => _handleLongPress(context),
       child: Card(
         shape: RoundedRectangleBorder(
@@ -121,14 +104,14 @@ class SavedNewsCard extends StatelessWidget {
         ),
         child: Container(
           width: MediaQuery.of(context).size.width,
-          height: 100,
+          height: 225,
           child: Stack(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'assets/images/homepage_placeholder_1.jpeg',
-                  height: 250,
+                child: Image.network(
+                  widget.article.urlToImage,
+                  height: 225,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
@@ -150,12 +133,22 @@ class SavedNewsCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Crypto investors should be prepared to lose all their money, BOE governor says',
+                      widget.article.title,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'by ${widget.article.author}',
+                      style: TextStyle(color: Colors.grey[300]),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      widget.article.description,
+                      style: TextStyle(color: Colors.grey[300]),
                     ),
                   ],
                 ),
@@ -170,6 +163,19 @@ class SavedNewsCard extends StatelessWidget {
                   child: Icon(
                     Icons.more_vert,
                     color: Colors.white,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    //Remove Bookm Logic
+                  },
+                  child: Icon(
+                    Icons.bookmark,
+                    color: Colors.yellow,
                   ),
                 ),
               ),
